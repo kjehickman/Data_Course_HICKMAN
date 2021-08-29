@@ -11,3 +11,4 @@ Here I'm going to attempt a paragraph break.
 This line should be a new paragraph.
 *This line should be Italicized.*
 ~~This is a Strikethrough phrase.~~
+**If all of the _other_ commands are working properly, then why hasn't the _heading_ formatting worked.
