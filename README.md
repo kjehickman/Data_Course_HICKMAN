@@ -9,3 +9,4 @@ This is an explicit acknowledgment that the first three times I attempted a comm
 Here I'm going to attempt a paragraph break.
 
 This line should be a new paragraph.
+*This line should be Italicized.*
