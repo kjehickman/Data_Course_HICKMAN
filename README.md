@@ -15,3 +15,4 @@ This line should be a new paragraph.
 #This should be a heading.
 **This should be bolded (for real this time.)**
 # Is this a heading?
+The mistake I made with headings is that I didn't leave a **space** after the _pound_ sign.
