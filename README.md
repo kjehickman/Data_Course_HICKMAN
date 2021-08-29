@@ -14,3 +14,4 @@ This line should be a new paragraph.
 **If all of the _other_ commands are working properly, then why hasn't the _heading_ formatting worked.
 #This should be a heading.
 **This should be bolded (for real this time.)**
+# Is this a heading?
