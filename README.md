@@ -10,3 +10,4 @@ Here I'm going to attempt a paragraph break.
 
 This line should be a new paragraph.
 *This line should be Italicized.*
+~~This is a Strikethrough phrase.~~
