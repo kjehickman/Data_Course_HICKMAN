@@ -1,0 +1,7 @@
+For my final project I would like to work with the data sets from Lee et al. 2019, Lee et al. 2020, and the dataset for the paper we're currently working on. Hopefully I can analyze the data to see if there are any interactions or significant associations / correlations between fungi and bacteria that may impact the fitness of mangroves.
+
+The data is from a genomic analysis of mangrove associated fungi and bacteria in Southeast Asia. The datasets form the analysis are found on the National Center for Biotechnology Information under the BioProject ID PRJNA592423 (https://www.ncbi.nlm.nih.gov/bioproject/PRJNA592423) and Accession PRJNA545581 (https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA545581), and is in the form of raw sequence reads. I will get the third data set form your Github account..?
+
+
+
+
