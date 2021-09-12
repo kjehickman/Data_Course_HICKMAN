@@ -13,7 +13,5 @@ g + geom_jitter(width = 2, size = 2) +
        y="Bacterial Genus",
        title="Microbiome Correlation:")
 
-write.csv(fakdat, "fake_data.csv")
-
-fakdat
+write.csv(fakdat, "/Users/mac/Desktop/Data_Course_HICKMAN/Assignment_4/fake_data.csv", row.names = FALSE)
 
