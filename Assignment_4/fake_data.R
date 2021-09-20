@@ -17,7 +17,7 @@ ggplot(fakdat, mapping = aes(x=B_Genus, y=F_Class, color = Group)) +
   geom_point(size = 3) +
   facet_wrap(~Plant_Part) +
   labs(subtitle="Bacteria and Fungi by Plant Part",
-       caption = "Correlation as an indicator of microbiome diversity in plant parts.",
+       caption = "Correlation as an indicator of microbiome diversity in plant parts. Sediment appears to be highest in diversity and several fungal classes consistently overlap with the same bacterial genera.",
        x="Bacterial Genus",
        y="Fungal Class",
        title="Microbiome Correlation:") +
