@@ -49,21 +49,17 @@ str(state_max_fatality_ratio2)
 
 # Step V. 
   # This function orders the variable "Province_State" in decreasing order
-state_max_fatality_ratio2 <- state_max_fatality_ratio2[order(state_max_fatality_ratio$Province_State, 
-                                                             decreasing = TRUE), ] 
+state_max_fatality_ratio2 <- state_max_fatality_ratio2[order(state_max_fatality_ratio$Maximum_Fatality_Ratio, decreasing = TRUE), ] 
 
-# This creates a barplot with the desired specifications
-  # The instructions were a little unclear, so I listed them by descending alphabetical order
-  # given that the x-axis was defined as state and that's the specified "descending"
+# This creates a barplot with the desired specifications, by descending Maximum_Fatality_Ratio order
 state_max_fatality_ratio2 %>% 
   ggplot(mapping = aes(x=Province_State, y=Maximum_Fatality_Ratio)) +
-  geom_bar(mapping = aes_(x=state_max_fatality_ratio2$Province_State, 
+  geom_bar(mapping = aes_(x=reorder(state_max_fatality_ratio2$Province_State, -state_max_fatality_ratio$Maximum_Fatality_Ratio),  
                           y=state_max_fatality_ratio2$Maximum_Fatality_Ratio), 
            stat = "identity", fill="black", alpha=0.9) +
-  labs(x="Region", 
-       y="Maximum Fatality Ratios", 
-       title = "Maximum Fatality Ratios by State",
-       caption = "Max fatality rates vary greatly by region, \ndefined as states and the District of Columbia.") +
+  labs(x="Region", y="Maximum Fatality Ratios", title = "Maximum Fatality Ratios by State",
+       caption = "Max fatality rates vary greatly by region, 
+       \ndefined as states and the District of Columbia.") +
   theme(plot.caption = element_text(size = 10), 
                plot.title = element_text(hjust = 0, colour = "blue", face = "bold"),
         axis.text.x = element_text(angle = 90), panel.background = element_rect(fill = "green"))
