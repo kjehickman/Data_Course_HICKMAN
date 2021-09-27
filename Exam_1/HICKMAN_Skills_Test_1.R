@@ -40,12 +40,11 @@ state_max_fatality_ratio2 <- state_max_fatality_ratio
 class(state_max_fatality_ratio$Province_State)
   # changed variable form chr to factor
 state_max_fatality_ratio2$Province_State <- as.factor(state_max_fatality_ratio$Province_State)
-  # double checked new df class type
+  # double checked new df class types
 str(state_max_fatality_ratio2)
 
 # Step V. 
-  # ARRANGE x-axis in descending order; x-axis labels turned 90 degrees
-  # This function 
+  # This function orders the variable "Province_State" in decreasing order
 state_max_fatality_ratio2 <- state_max_fatality_ratio2[order(state_max_fatality_ratio$Province_State, 
                                                              decreasing = TRUE), ] 
 
@@ -74,14 +73,15 @@ deathsplot <- df %>%
 
   ggplot(deathsplot, aes(x=Last_Update, y=Deaths)) +
   geom_point() +
-  geom_smooth(se=FALSE)
+  geom_smooth(se=FALSE) +
+    labs(x="Date", 
+         y="Deaths", 
+         title = "COVID-19 Deaths Over Time",
+         caption = "Deaths steadily increased over time throughout the US.")
   
   
-  theme(axis.text.x = element_text(angle = 90)) +
-  scale_x_continuous("Deaths", breaks = deathsplot$Last_Update) +
-  labs(x="Deaths", 
-       y="Date", 
-       title = "COVID-19 Deaths Over Time",
-       caption = "Deaths steadily increased over time throughout the US.")
+    theme(axis.text.x = element_text(angle = 90)) +
+    scale_x_continuous("Deaths", breaks = deathsplot$Last_Update) 
+    
 
 
