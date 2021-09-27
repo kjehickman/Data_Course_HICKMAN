@@ -17,11 +17,12 @@ ggplot(fakdat, mapping = aes(x=B_Genus, y=F_Class, color = Group)) +
   geom_point(size = 3) +
   facet_wrap(~Plant_Part) +
   labs(subtitle="Bacteria and Fungi by Plant Part",
-       caption = "Correlation as an indicator of microbiome diversity in plant parts. Sediment appears to be highest in diversity and several fungal classes consistently overlap with the same bacterial genera.",
+       caption = "Correlation as an indicator of microbiome diversity in plant parts. \nSediment appears to be highest in diversity and several fungal classes \nconsistently overlap with the same bacterial genera.",
        x="Bacterial Genus",
        y="Fungal Class",
        title="Microbiome Correlation:") +
-  theme_light()
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 90))
 
 # this function exports the fake data to a csv file. I removed the full file path, so it should work on any computer.
 write.csv(fakdat, "fake_data.csv", row.names = FALSE)
