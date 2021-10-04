@@ -28,7 +28,9 @@ Astates %>%
 
 
 # Step IV. 
-  # The first function creates the df subset using aggregate and max
+
+
+ # The first function creates the df subset using aggregate and max
 state_max_fatality_ratio <- aggregate(Case_Fatality_Ratio ~ Province_State, data = df, max, na.rm = TRUE)
   # The second function changes the name of the second variable
 names(state_max_fatality_ratio)[2] <- 'Maximum_Fatality_Ratio'
@@ -48,6 +50,7 @@ str(state_max_fatality_ratio2)
 
 
 # Step V. 
+
   # This function orders the variable "Province_State" in decreasing order
 state_max_fatality_ratio2 <- state_max_fatality_ratio2[order(state_max_fatality_ratio$Maximum_Fatality_Ratio, decreasing = TRUE), ] 
 
