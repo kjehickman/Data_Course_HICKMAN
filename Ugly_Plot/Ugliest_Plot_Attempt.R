@@ -36,7 +36,8 @@ ggplot(df, aes(x=bill_depth_mm, y=flipper_length_mm)) +
         axis.text.y = element_text(size = 4, angle = 40, color = "violet"),
         plot.background = element_rect(fill = "Green", color = "royalblue4", size = 5, linetype = 12),
         legend.text = element_text(angle=190)) +
-  facet_wrap(~island)
+  facet_wrap(~island) +
+  transition_time(year)
 
 
 print(plot)
