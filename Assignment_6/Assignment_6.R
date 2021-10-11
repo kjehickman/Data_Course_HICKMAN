@@ -49,13 +49,17 @@ meow <- dat %>%
   summarize(Mean_absorbance = mean(Absorbance)) %>% 
   filter(!Mean_absorbance == 0) 
 
-meow %>% 
-  ggplot(aes(x=Time, y=Mean_absorbance, color=sample_id)) +
+dat$Time <- as.numeric(dat$Time)
+
+ggplot(meow, aes(x=Time, y=Mean_absorbance, color=sample_id)) +
   geom_smooth(method="lm", se = FALSE) +
   facet_wrap(~dilution) +
-  theme_minimal() 
+  theme_minimal() +
+  transition_time(Time, range = c(24, 144)) + ease_aes('linear')
 
+gganimate::transition_time()
 
+?sapply()
 ?aggregate()
   # DONT run this
 summarize(Mean_Absorbance = mean(Absorbance), Time) %>% 
