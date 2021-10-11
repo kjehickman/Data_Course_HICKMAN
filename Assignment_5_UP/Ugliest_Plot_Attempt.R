@@ -16,7 +16,7 @@ df <- penguins
 img <- "./face_foot.jpeg"
 jpeg <- readJPEG("./angry_penguin.jpeg",native = TRUE)
 
-ggplot(df, aes(x=bill_depth_mm, y=flipper_length_mm)) +
+anim <- ggplot(df, aes(x=bill_depth_mm, y=flipper_length_mm)) +
   annotation_custom(rasterGrob(image = jpeg, 
                                width = unit(1,"npc"), 
                                height = unit(1,"npc")),  
@@ -39,6 +39,7 @@ ggplot(df, aes(x=bill_depth_mm, y=flipper_length_mm)) +
   facet_wrap(~island) +
   transition_time(year)
 
+save_animation(anim, "./HICKMAN_Ugly_Plot.gif")
 
 print(plot)
 
