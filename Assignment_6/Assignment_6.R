@@ -5,6 +5,7 @@ library(janitor)
 library(readxl)
 library(gganimate)
 library(transformr)
+library(sf)
 
 # loaded untidy dataset
 dat <- read_csv("../../Data_Course/Data/BioLog_Plate_Data.csv") 
@@ -42,20 +43,47 @@ dat %>%
 
 
 dat %>%
-  group_by(sample_id, rep, dilution) %>% 
-  summarize(Mean_absorbance = mean(Absorbance),
-            Absorbance, 
-            Time,
-            sample_id, 
-            dilution,
-            substrate) %>% 
+  group_by(sample_id, rep, Time, dilution) %>% 
   filter(substrate == "Itaconic Acid") %>% 
+  summarize(Mean_absorbance = mean(Absorbance)) %>% 
+  filter(!Mean_absorbance == 0) %>% 
+  View()
   ggplot(aes(x=Time, y=Mean_absorbance, color=sample_id)) +
   geom_smooth(method="lm", se = FALSE) +
   facet_wrap(~dilution) +
-  theme_minimal()
-  
+  theme_minimal() +
+  transition_time(Time)
 
+
+
+?aggregate()
+  # DONT run this
+summarize(Mean_Absorbance = mean(Absorbance), Time) %>% 
+  select(sample_id, rep, Time, Absorbance, Mean_absorbance, dilution) %>% 
+  
+  # OR this
+summarize(Mean_absorbance = mean(Absorbance),
+  Absorbance, 
+  Time,
+  sample_id, 
+  dilution,
+  substrate,
+  rep,
+  na.rm = TRUE) %>% 
+
+dat %>% 
+  filter(substrate == "Itaconic Acid") %>% 
+  group_by(sample_id, rep) %>% 
+  select(Absorbance, 
+         Time,
+         sample_id, 
+         dilution,
+         substrate,
+         rep) %>% 
+  summarize(Mean_absorbance = mean(Absorbance),
+            na.rm = TRUE) %>% 
+  View()
+?case_when()
 ?na.rm
 ?summarize()
 
