@@ -42,18 +42,18 @@ dat %>%
 # this is the first plot to complete step 3
 
 
-dat %>%
+meow <- dat %>%
   group_by(sample_id, rep, Time, dilution) %>% 
   filter(substrate == "Itaconic Acid") %>% 
+  mutate(trip = factor(rep, levels = c(1,2,3))) %>% 
   summarize(Mean_absorbance = mean(Absorbance)) %>% 
-  filter(!Mean_absorbance == 0) %>% 
-  View()
+  filter(!Mean_absorbance == 0) 
+
+meow %>% 
   ggplot(aes(x=Time, y=Mean_absorbance, color=sample_id)) +
   geom_smooth(method="lm", se = FALSE) +
   facet_wrap(~dilution) +
-  theme_minimal() +
-  transition_time(Time)
-
+  theme_minimal() 
 
 
 ?aggregate()
