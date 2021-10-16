@@ -41,59 +41,16 @@ dat %>%
   labs(title="Just dilution 0.1")
 # this is the first plot to complete step 3
 
+# plot 2
 
-meow <- dat %>%
-  group_by(sample_id, rep, Time, dilution) %>% 
+plot2 <- dat %>% 
   filter(substrate == "Itaconic Acid") %>% 
-  mutate(trip = factor(rep, levels = c(1,2,3))) %>% 
-  summarize(Mean_absorbance = mean(Absorbance)) %>% 
-  filter(!Mean_absorbance == 0) 
-
-dat$Time <- as.numeric(dat$Time)
-
-ggplot(meow, aes(x=Time, y=Mean_absorbance, color=sample_id)) +
-  geom_smooth(method="lm", se = FALSE) +
-  facet_wrap(~dilution) +
-  theme_minimal() +
-  transition_time(Time, range = c(24, 144)) + ease_aes('linear')
-
-gganimate::transition_time()
-
-?sapply()
-?aggregate()
-  # DONT run this
-summarize(Mean_Absorbance = mean(Absorbance), Time) %>% 
-  select(sample_id, rep, Time, Absorbance, Mean_absorbance, dilution) %>% 
-  
-  # OR this
-summarize(Mean_absorbance = mean(Absorbance),
-  Absorbance, 
-  Time,
-  sample_id, 
-  dilution,
-  substrate,
-  rep,
-  na.rm = TRUE) %>% 
-
-dat %>% 
-  filter(substrate == "Itaconic Acid") %>% 
-  group_by(sample_id, rep) %>% 
-  select(Absorbance, 
-         Time,
-         sample_id, 
-         dilution,
-         substrate,
-         rep) %>% 
-  summarize(Mean_absorbance = mean(Absorbance),
+  group_by(dilution, sample_id, Time) %>% 
+  summarize(Mean_absorbance = mean(Absorbance), Time,
             na.rm = TRUE) %>% 
-  View()
-?case_when()
-?na.rm
-?summarize()
+  ggplot(aes(x=Time, y=Mean_absorbance, color=sample_id)) +
+  geom_line() +
+  facet_wrap(~dilution)
 
-# select(sample_id, dilution, Absorbance, Mean_absorbance, Time) %>% 
-  class(dat$Absorbance)
-  dat$Absorbance[dat$Absorbance == 0] <- NA
-  dat$Absorbance <- as.numeric(dat$Absorbance)
-  # these funcitons remove 0 from the dataset 
-  
+plot2 + transition_reveal(Time) 
+
