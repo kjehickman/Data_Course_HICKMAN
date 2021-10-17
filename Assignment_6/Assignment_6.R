@@ -20,7 +20,8 @@ glimpse(dat)
 dat <- dat %>% 
   pivot_longer(cols = c("hr_24", "hr_48", "hr_144"),
                names_to = "Time",
-               values_to = "Absorbance")
+               values_to = "Absorbance",
+               names_prefix = "hr_")
 
 # these functions removes prefixes "hr_" form observations and lists time as numeric
 dat$Time <- sub("hr_", "", dat$Time)
