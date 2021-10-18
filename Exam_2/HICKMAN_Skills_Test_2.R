@@ -22,10 +22,8 @@ ggsave("./HICKMAN_Fig_1.jpg")
   # This displays which states are under "NA" in the region variable
 na <- ls %>% 
   filter(is.na(region)) 
-  # SUGGESTED throwing in a unique() to make more interesting
+  # SUGGESTED using unique() to make more interesting
   unique(ls$State, incomparables = TRUE, fromLast = FALSE)
-
-  ls[!duplicated(ls$State), ls$region]
 
 # Step III. ####
   # Here I've loaded and converted the dataset to long type
@@ -73,20 +71,20 @@ ggsave("./HICKMAN_Fig_3.jpg")
 
 # Step V. ####
   # This is the set of functions to complete graph 4
-  # the "proportion" should be the number of deaths that occurred in a given region, in a given year, 
-  # divided by the total mortality rate for that year
+  # filtering out rows without values, creating a mean variable and using it for the mr proportion
 uu %>% 
   filter(!is.na(MortalityRate), ) %>% 
-  group_by(Year, region) %>% 
-  summarise(Year, MortalityRate, 
-            AnnSum = sum(MortalityRate * Year),
-            MRProportions = proportions(MortalityRate * Year), 
-            N=n()) %>% 
-  ggplot(aes(x=Year, y=MRProportions)) +
-  geom_point() +
+  summarise(MRMean = mean(MortalityRate), 
+            MortalityRate, region, Year,
+            n=n()) %>% 
+  mutate(MRregion = sum(MortalityRate), 
+         MRProp = MortalityRate/MRMean) %>% 
+  ggplot(aes(x=Year, y=MRProp)) +
+  geom_point(color="blue", size = 0.5) +
   labs(y="Mortality Rate",
        x="Year") +
-  facet_wrap(~region)
+  facet_wrap(~region) +
+  theme_bw()
 
-
-
+# this function will export the graph as a .jpg
+ggsave("./HICKMAN_Fig_4.jpg")
