@@ -1,0 +1,14 @@
+Analysis of Deviance Table
+
+Model: gaussian, link: identity
+
+Response: Salary
+
+Terms added sequentially (first to last)
+
+
+      Df  Deviance Resid. Df Resid. Dev
+NULL                   40223  495046352
+State 50  68005486     40173  427040866
+Tier   2  84868328     40171  342172538
+Rank   2 198319514     40169  143853024

@@ -17,3 +17,9 @@ BiocManager::install("ShortRead")
 full <- readRDS("./bact_and_fungi_clean_ps_object")
 
 # see this site: https://joey711.github.io/phyloseq/
+
+full
+
+plot_bar(full)
+
+?otu_table
