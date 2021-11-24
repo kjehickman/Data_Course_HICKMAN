@@ -1,0 +1,184 @@
+---
+title: "HICKMAN's Exam 3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(janitor)
+library(tidyr)
+library(dplyr)
+library(transformr)
+library(sf)
+library(broom)
+```
+
+## STEP I: Load and Clean the Data
+
+The first step in the exam was to load a data set, "FacultySalaries_1995.csv," and tidy it by combining several repeated variables. As you can see, the dataset is dirty indeed.
+
+
+```{r data, echo=TRUE, warning=FALSE, message=FALSE, include=TRUE}
+dat <- read_csv("./FacultySalaries_1995.csv")
+glimpse(dat)
+```
+
+So I went about my business, combining more columns than was probably necessary for basal success. My goal? Recreating a subpar graph. 
+
+To achieve this feat, I had to get out my broom and cleaning supplies--praise the lord for pivot_longer!
+
+```{r tidy, echo=TRUE, warning=FALSE, message=FALSE, include=TRUE}
+dat <- dat %>% 
+  pivot_longer(cols = c("AvgFullProfSalary", "AvgAssocProfSalary", "AvgAssistProfSalary"),
+               names_to = "Rank",
+               values_to = "Salary") %>% 
+  pivot_longer(cols = c("AvgFullProfComp", "AvgAssocProfComp", "AvgAssistProfComp"),
+               names_to = "Rank_Comp",
+               values_to = "Compensation") %>% 
+  pivot_longer(cols = c("NumFullProfs", "NumAssocProfs", "NumAssistProfs", "NumInstructors"),
+               names_to = "Rank_Num",
+               values_to = "Staff_Number") %>% 
+  mutate(Rank = case_when(Rank == "AvgFullProfSalary" ~ "Full",
+                          Rank == "AvgAssocProfSalary" ~ "Assoc",
+                          Rank == "AvgAssistProfSalary" ~ "Assist"))
+```
+
+Sweet success was my friend, but only after I realized that the fourth Tier was a poser. Yes, this faux category included but one university (which I've never heard of) with a particular gift for screwing up box plots. So I cut it out, like tissue rife with gangrene, using the sharp blade of subset.
+
+```{r subset, echo=TRUE, warning=FALSE, message=FALSE, include=TRUE}
+dat <- dat[!(dat$Tier=="VIIB"), ]
+```
+
+Once I passed this tribulation, I was free to graph as I pleased. And you can bet I did...
+
+```{r graph1, echo=TRUE, warning=FALSE, message=FALSE, include=TRUE}
+dat %>% 
+  ggplot(aes(x=Rank,y=Salary)) +
+  geom_boxplot(aes(fill=Rank)) +
+  facet_wrap(~Tier) +
+  theme_minimal() +
+  theme(legend.key.size = unit(1, "cm"),
+        legend.title = element_text(size = 19, color = "black"),
+        legend.text = element_text(size = 13, color = "black"),
+        axis.text.x = element_text(angle = 65, size = 13, color = "black"),
+        axis.text.y = element_text(size = 13, color = "black"),
+        axis.title.x = element_text(size = 19, color = "black"),
+        axis.title.y = element_text(size = 19, color = "black"),
+        strip.text.x = element_text(size = 13, color = "black"))
+
+ggsave("./HICKMAN_Fig_1.jpg")
+```
+
+After exporting my hard-earned treasure to a directory containing Exam_3.RProj, I was off on the second leg of my journey...
+
+
+
+
+## STEP II: Export ANOVA file
+
+To begin this second chapter, I needed to first have an ANOVA to export. Thus, I diligently created a model that would show the influence of several variables, but I neglected the distasteful interactions. Slow and simple wins the race, or so I hear. 
+
+```{r mod, echo=TRUE, warning=FALSE, message=FALSE, include=TRUE}
+mod1 <- glm(data = dat, 
+            formula = Salary ~ State + Tier + Rank)
+summary(mod1)
+```
+
+After the model was modelled and I was moderately satisfied, I moved on to bigger bananas. 
+
+```{r anova, echo=TRUE, warning=FALSE, message=FALSE}
+anova(mod1)
+```
+
+Finally, the time came to export this special treasure. A treasure bearing a face that only a mother could love (seriously, isn't there a prettier way to do this without downloading a discreet, possibly virus-ridden package from some rando's Github?) 
+
+```{r sink, echo=TRUE, warning=FALSE, message=FALSE}
+sink("./Salary_ANOVA_Summary.txt")
+anova(mod1)
+sink(NULL)
+```
+
+We're cooking with coal now.. On to the next challenge! 
+
+
+
+
+## STEP III: Load and Tidy Second Data Set
+
+I'll spare you the gruesome details of the next hairy individual I was slated to joust. Let's just say, this one should lay off the drugs. 
+
+```{r data2, echo=TRUE, warning=FALSE, message=FALSE}
+dat2 <- read_csv("./Juniper_Oils.csv")
+glimpse(dat2)
+```
+
+Nonetheless, I bested yet another beast with my trusty steed, pivot_longer. Don't believe me? See for yourself. 
+
+```{r tidy2, echo=TRUE, warning=FALSE, message=FALSE}
+dat2 <- dat2 %>% 
+  pivot_longer(cols = c("alpha-pinene","para-cymene","alpha-terpineol","cedr-9-ene",
+                      "alpha-cedrene","beta-cedrene","cis-thujopsene","alpha-himachalene",
+                      "beta-chamigrene","cuparene","compound 1","alpha-chamigrene",
+                      "widdrol","cedrol","beta-acorenol","alpha-acorenol","gamma-eudesmol",
+                      "beta-eudesmol","alpha-eudesmol","cedr-8-en-13-ol","cedr-8-en-15-ol",
+                      "compound 2","thujopsenal"),
+             names_to = "ChemicalID",
+             values_to = "Concentration")
+```
+
+Impressive, I know. Much easier with the gifts from King Geoffrey. 
+
+## STEP IV: Graph and Export Second Data Set
+
+After my looting of Juniper_Oils, my eyes thirsted for beauty. To transform such an uncomely creature into something that is actually readable was the only way I could satiate this thirst. 
+
+```{r graph2, echo=TRUE, warning=FALSE, message=FALSE}
+dat2 %>% 
+  ggplot(aes(x=YearsSinceBurn, y=Concentration)) +
+  geom_smooth(method = loess) +
+  facet_wrap(~ChemicalID, scales = "free_y") +
+  theme_minimal() +
+  labs(x = "Years Since Burn",
+       title = "Concentration by Chemical") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+ggsave("./HICKMAN_Fig_2.jpg")
+```
+
+Alright, alright. So beauty was an overstatement. Well, isn't literacy a thing of beauty? I suppose it could've been more aesthetically pleasing, but I was feeling lazy (and so were you, apparently.)
+
+## STEP V: Generalized Linear Models Time Baby!
+
+So here I am, in "generalized linear model mode," trying to be a good scientist and isolate the statistically significant variables, and I realized I get to use interaction! 
+
+
+At last, the moment my ancestors have been waiting for! 
+
+```{r mod2, echo=TRUE, warning=FALSE, message=FALSE}
+mod2 <- glm(data = dat2, formula = Concentration ~ ChemicalID * YearsSinceBurn)
+mod2_sum <- summary(mod2)
+```
+
+This model was intended to show statistically significant concentrations, as impacted by chemical and time. 
+In other words, to show which chemicals are most likely to rot.
+
+Then came the tidy tibble:
+
+```{r tibble, echo=TRUE, warning=FALSE, message=FALSE}
+tt <- tidy(mod2)
+```
+
+After creating a tibble, I cut out the nasty, insignificant bits, using that same sharp, old blade, subset.
+
+```{r signif, echo=TRUE, warning=FALSE, message=FALSE}
+ttss <- tt[c(tt$p.value <= 0.05), ]
+```
+
+And meeeeeeeow. 
+
+
+I pushed all files to Github, and here we are. The end of a testy journey, my shining Rmor glistening in the sun. Sharp blade in-hand, aside my trusty steed, it's on to the real adventure. 
+
+
+Final project, here we come!

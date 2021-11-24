@@ -106,7 +106,10 @@ tt <- tidy(mod2)
 #tidy tibble subsetted to show only statistically significant ChemicalID's
 ttss <- tt[c(tt$p.value <= 0.05), ]
 
+#### STEP VI: Push all files to Github
 
+#### STEP VII: Bonus Points
+# Make an R-Markdown file contianing all this info and knit to html
 
 
 
