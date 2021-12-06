@@ -1,0 +1,120 @@
+---
+title: "Final Project"
+pagetitle: "BIOL 3100"
+author: "Kate Hickman"
+output: html_document
+TOC: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE)
+```
+
+# Bacterial-Fungal Interactions in Mangrove Roots 
+
+## <b>Introduction</b>
+<br>
+This project aims to illuminate potential interactions between bacterial and fungal species in terms of community assembly. The analysis is multi-faceted and will include various comparisons between the subjects of research.
+<br>
+# Example data analysis
+
+## Mushroom growth data
+
+Here, we are looking at growth rates for two species of commercial mushrooms: *Pleurotus ostreotus* and *P. cornucopiae*.
+
+Let's take a quick look at the data structure:
+
+```{r}
+library(tidyverse)
+df <- read_csv("../data/mushroom_growth.csv")
+
+kableExtra::kable(df[1:5, ]) %>% 
+  kableExtra::kable_classic()
+```
+
+We have a few variables that were measured, and the outcome of growth rate is in g/day. The independent variables were...
+
+```{r}
+
+names(df[1:5,])
+```
+
+Okay, let's take a look at this data graphically:
+
+```{r, fig.width=8,fig.height=6}
+library(GGally)
+ggpairs(df)
+```
+
+The purpose of this data set was to find the combination of inputs that led the fastest mushroom growth for sale at the farmers' market. 
+
+
+Let's look at that.
+
+Here are the conditions where the max growth rate was found:
+
+```{r}
+
+df %>% 
+  filter(GrowthRate == max(GrowthRate)) %>% 
+  kableExtra::kable() %>% 
+  kableExtra::kable_classic()
+
+max(df$GrowthRate)
+```
+
+---
+
+### Well, which factors are really important for mushroom growth rate?
+
+Here's a simple model and a list of significant predictors:
+
+```{r}
+mod <- glm(data=df,
+           formula = GrowthRate ~ Light + Species + Nitrogen + Humidity + Temperature)
+mod$formula
+summary(mod) 
+mod %>% 
+  broom::tidy() %>% 
+  filter(p.value < 0.05) %>% 
+  kableExtra::kable() %>% 
+  kableExtra::kable_classic()
+
+```
+
+### A reduced model, provided by the MASS::StepAIC() function gives us the following model:
+
+```{r}
+step <- mod %>% 
+  MASS::stepAIC()
+step$formula
+
+mod2 <- glm(data=df, formula = step$formula)
+
+mod2 %>% 
+  broom::tidy() %>% 
+  kableExtra::kable() %>% 
+  kableExtra::kable_classic()
+
+```
+
+<br><br><br><br><br><br>
+
+And now, since it's a final project, Dr. Zahn wants many pretty pictures:
+
+```{r}
+library(modelr)
+
+p <- add_predictions(df, mod2) %>% 
+  ggplot(aes(x=Light, y=pred, color=Species)) +
+  geom_point() +
+  theme_minimal() +
+  labs(title= "Predicted growth rates from second model")
+
+plotly::ggplotly(p)
+
+```
+
+
+
+

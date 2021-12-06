@@ -1,0 +1,142 @@
+---
+title: "HICKMAN's Exam 3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(janitor)
+library(tidyr)
+library(dplyr)
+library(transformr)
+library(sf)
+library(broom)
+
+theme_set(theme_minimal())
+```
+
+## STEP I: Load and Clean the Data
+
+```{r data, echo=TRUE, warning=FALSE, message=FALSE, include=TRUE}
+dat <- read_csv("./FacultySalaries_1995.csv")
+glimpse(dat)
+```
+
+So I went about my business, combining more columns than was probably necessary for basal success. My goal? Recreating a subpar graph. 
+
+To achieve this feat, I had to get out my broom and cleaning supplies--praise the lord for pivot_longer!
+
+```{r tidy, echo=TRUE, warning=FALSE, message=FALSE, include=TRUE}
+dat <- dat %>% 
+  pivot_longer(cols = c("AvgFullProfSalary", "AvgAssocProfSalary", "AvgAssistProfSalary"),
+               names_to = "Rank",
+               values_to = "Salary") %>% 
+  pivot_longer(cols = c("AvgFullProfComp", "AvgAssocProfComp", "AvgAssistProfComp"),
+               names_to = "Rank_Comp",
+               values_to = "Compensation") %>% 
+  pivot_longer(cols = c("NumFullProfs", "NumAssocProfs", "NumAssistProfs", "NumInstructors"),
+               names_to = "Rank_Num",
+               values_to = "Staff_Number") %>% 
+  mutate(Rank = case_when(Rank == "AvgFullProfSalary" ~ "Full",
+                          Rank == "AvgAssocProfSalary" ~ "Assoc",
+                          Rank == "AvgAssistProfSalary" ~ "Assist"))
+
+clean <- dat %>% 
+  select(ends_with("Salary"), "FedID", "Tier", "State") %>% 
+  pivot_longer(starts_with("Avg"), 
+               names_to = "Rank",
+               velues_to("Salary",
+                         names_prefix = "Avg") %>% 
+                 mutate(Rank = str_remove_all(Rank, "ProfSalary")) %>% 
+                 filter(Tier != "VIIB"))
+clean %>% 
+  ggplot(aes(x=Rank,y=Salary,fill=Rank)) +
+  geom_boxplot() +
+  facet_wrap(~Tier) +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+
+ggsave("./HICKMAN_Fig_1.jpg")
+
+```
+
+
+After exporting my hard-earned treasure to a directory containing Exam_3.RProj, I was off on the second leg of my journey...
+
+
+
+
+## STEP II: Export ANOVA file
+
+To begin this second chapter, I needed to first have an ANOVA to export. Thus, I diligently created a model that would show the influence of several variables, but I neglected the distasteful interactions. Slow and simple wins the race, or so I hear. 
+
+```{r mod, echo=TRUE, warning=FALSE, message=FALSE, include=TRUE}
+mod <- clean %>% 
+  aov (Salary ~ State + Tier + Rank, data=.)
+
+sink("./Salary_ANOVA_Summary.txt")
+summary(mod)
+sink(NULL)
+```
+
+
+## STEP III: Load and Tidy Second Data Set
+
+
+```{r data2, echo=TRUE, warning=FALSE, message=FALSE}
+dat2 <- read_csv("./Juniper_Oils.csv")
+glimpse(dat2)
+
+chems <- c("alpha-pinene","para-cymene","alpha-terpineol","cedr-9-ene",
+                      "alpha-cedrene","beta-cedrene","cis-thujopsene","alpha-himachalene",
+                      "beta-chamigrene","cuparene","compound 1","alpha-chamigrene",
+                      "widdrol","cedrol","beta-acorenol","alpha-acorenol","gamma-eudesmol",
+                      "beta-eudesmol","alpha-eudesmol","cedr-8-en-13-ol","cedr-8-en-15-ol",
+                      "compound 2","thujopsenal")
+```
+
+Nonetheless, I bested yet another beast with my trusty steed, pivot_longer. Don't believe me? See for yourself. 
+
+```{r tidy2, echo=TRUE, warning=FALSE, message=FALSE}
+clean2 <- dat2 %>% 
+  pivot_longer(chems,
+             names_to = "Compound",
+             values_to = "Concentration")
+```
+
+Impressive, I know. Much easier with the gifts from King Geoffrey. 
+
+## STEP IV: Graph and Export Second Data Set
+
+After my looting of Juniper_Oils, my eyes thirsted for beauty. To transform such an uncomely creature into something that is actually readable was the only way I could satiate this thirst. 
+
+```{r graph2, echo=TRUE, warning=FALSE, message=FALSE}
+dat2 %>% 
+  ggplot(aes(x=YearsSinceBurn, y=Concentration)) +
+  geom_smooth(method = loess) +
+  facet_wrap(~Compound, scales = "free_y") +
+  theme_minimal() +
+  labs(x = "Years Since Burn",
+       title = "Concentration by Chemical") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+ggsave("./HICKMAN_Fig_2.jpg")
+```
+
+Alright, alright. So beauty was an overstatement. Well, isn't literacy a thing of beauty? I suppose it could've been more aesthetically pleasing, but I was feeling lazy (and so were you, apparently.)
+
+## STEP V: Generalized Linear Models Time Baby!
+
+So here I am, in "generalized linear model mode," trying to be a good scientist and isolate the statistically significant variables, and I realized I get to use interaction! 
+
+
+At last, the moment my ancestors have been waiting for! 
+
+```{r mod2, echo=TRUE, warning=FALSE, message=FALSE}
+mod2 <- glm(data = clean2, formula = Concentration ~ ChemicalID * YearsSinceBurn)
+mod2_sum <- summary(mod2)
+tidy(mod2) %>% 
+  filter(p.value < 0.05) %>% 
+  mutate(term = str_remove_all(term, "Compound"))
+```
+
